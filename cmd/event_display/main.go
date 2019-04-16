@@ -81,5 +81,5 @@ func main() {
 		log.Fatal("Failed to create client, ", err)
 	}
 
-	log.Fatal(c.StartReceiver(context.Background(), gotEvent))
+	log.Fatalf("failed to start receiver: %s", c.StartReceiver(context.Background(), gotEvent))
 }
