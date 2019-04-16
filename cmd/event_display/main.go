@@ -62,14 +62,35 @@ func display(event cloudevents.Event) {
 }
 
 func gotEvent(event cloudevents.Event) {
-	fmt.Printf("Got Event Context: %+v\n", event.Context)
-	data := &Example{}
-	if err := event.DataAs(data); err != nil {
-		fmt.Printf("Got Data Error: %s\n", err.Error())
-	}
-	fmt.Printf("Got Data: %+v\n", data)
+	fmt.Printf("cloudevents.Event\n%s", event.String())
 
-	fmt.Printf("----------------------------\n")
+	fmt.Printf("Got Event Context: %+v\n", event.Context)
+
+  data := &Example{}
+  
+  var result map[string]interface{}
+  json.Unmarshal([]byte(event.Data), &result)
+
+  fmt.Printf("Dumping result:")
+  for key, value := range result {
+    // Each value is an interface{} type, that is type asserted as a string
+    fmt.Println(key, value.(string))
+  }
+
+  fmt.Printf("----------------------------\n")  
+}
+
+birdJson := `{"birds":{"pigeon":"likes to perch on rocks","eagle":"bird of prey"},"animals":"none"}`
+
+
+// The object stored in the "birds" key is also stored as 
+// a map[string]interface{} type, and its type is asserted from
+// the interface{} type
+birds := result["birds"].(map[string]interface{})
+
+for key, value := range birds {
+  // Each value is an interface{} type, that is type asserted as a string
+  fmt.Println(key, value.(string))
 }
 
 func main() {
