@@ -26,6 +26,7 @@ import (
 	"github.com/webvictim/eventing-sources/pkg/kncloudevents"
 )
 
+// Example is a structure to hold CloudEvents
 type Example struct {
 	Sequence int    `json:"id"`
 	Message  string `json:"message"`
@@ -67,15 +68,16 @@ func gotEvent(event cloudevents.Event) {
 
 	fmt.Printf("Got Event Context: %+v\n", event.Context)
 
-	data := &Example{}
-
 	var result map[string]interface{}
-	json.Unmarshal([]byte(event.Data), &result)
+	dataBytes, err := event.DataBytes()
+	if err != nil {
+		json.Unmarshal(dataBytes, &result)
 
-	fmt.Printf("Dumping result:")
-	for key, value := range result {
-		// Each value is an interface{} type, that is type asserted as a string
-		fmt.Println(key, value.(string))
+		fmt.Printf("Dumping result:")
+		for key, value := range result {
+			// Each value is an interface{} type, that is type asserted as a string
+			fmt.Println(key, value.(string))
+		}
 	}
 
 	fmt.Printf("----------------------------\n")
