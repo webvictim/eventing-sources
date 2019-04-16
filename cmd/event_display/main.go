@@ -25,6 +25,11 @@ import (
 	"github.com/knative/eventing-sources/pkg/kncloudevents"
 )
 
+type Example struct {
+	Sequence int    `json:"id"`
+	Message  string `json:"message"`
+}
+
 /*
 Example Output:
 
@@ -56,11 +61,25 @@ func display(event cloudevents.Event) {
 	fmt.Printf("☁️  cloudevents.Event\n%s", event.String())
 }
 
+func gotEvent(ctx context.Context, event cloudevents.Event) error {
+	fmt.Printf("Got Event Context: %+v\n", event.Context)
+	data := &Example{}
+	if err := event.DataAs(data); err != nil {
+		fmt.Printf("Got Data Error: %s\n", err.Error())
+	}
+	fmt.Printf("Got Data: %+v\n", data)
+
+	fmt.Printf("Got Transport Context: %+v\n", cloudevents.HTTPTransportContextFrom(ctx))
+
+	fmt.Printf("----------------------------\n")
+	return nil
+}
+
 func main() {
 	c, err := kncloudevents.NewDefaultClient()
 	if err != nil {
 		log.Fatal("Failed to create client, ", err)
 	}
 
-	log.Fatal(c.StartReceiver(context.Background(), display))
+	log.Fatal(c.StartReceiver(context.Background(), gotEvent))
 }
