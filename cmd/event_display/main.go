@@ -22,7 +22,7 @@ import (
 	"log"
 
 	cloudevents "github.com/cloudevents/sdk-go"
-	"github.com/knative/eventing-sources/pkg/kncloudevents"
+	"github.com/webvictim/eventing-sources/pkg/kncloudevents"
 )
 
 type Example struct {
@@ -61,7 +61,7 @@ func display(event cloudevents.Event) {
 	fmt.Printf("☁️  cloudevents.Event\n%s", event.String())
 }
 
-func gotEvent(ctx context.Context, event cloudevents.Event) error {
+func gotEvent(event cloudevents.Event) {
 	fmt.Printf("Got Event Context: %+v\n", event.Context)
 	data := &Example{}
 	if err := event.DataAs(data); err != nil {
@@ -69,10 +69,7 @@ func gotEvent(ctx context.Context, event cloudevents.Event) error {
 	}
 	fmt.Printf("Got Data: %+v\n", data)
 
-	fmt.Printf("Got Transport Context: %+v\n", cloudevents.HTTPTransportContextFrom(ctx))
-
 	fmt.Printf("----------------------------\n")
-	return nil
 }
 
 func main() {
@@ -81,5 +78,5 @@ func main() {
 		log.Fatal("Failed to create client, ", err)
 	}
 
-	log.Fatalf("failed to start receiver: %s", c.StartReceiver(context.Background(), gotEvent))
+	log.Fatal(c.StartReceiver(context.Background(), gotEvent))
 }
